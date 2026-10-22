@@ -1,4 +1,4 @@
-candidate_id,predicted,actual
-fictional-A,100,90
-fictional-B,70,85
-fictional-C,120,115
+candidate_id,predicted,actual,kind
+fictional-A,100,90,synthetic
+fictional-B,70,85,synthetic
+fictional-C,120,115,synthetic

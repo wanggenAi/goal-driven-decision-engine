@@ -6,7 +6,8 @@ import csv
 import math
 from pathlib import Path
 
-from .engine import ValidationError
+from .engine import ValidationError, _number
+from .history import forecast_errors
 
 
 def evaluate_csv(path: str | Path) -> dict:
@@ -29,7 +30,7 @@ def evaluate_csv(path: str | Path) -> dict:
                 raise ValidationError(f"{cid}: invalid prediction or outcome") from exc
             if not math.isfinite(predicted) or not math.isfinite(actual):
                 raise ValidationError(f"{cid}: prediction and outcome must be finite")
-            error = predicted - actual
+            error = _number(predicted - actual, "forecast error")
             errors.append(error)
             rows.append({"candidate_id": cid, "predicted": predicted,
                          "actual": actual, "error": error})
@@ -38,9 +39,9 @@ def evaluate_csv(path: str | Path) -> dict:
     n = len(errors)
     return {
         "sample_count": n,
-        "mae": round(sum(abs(error) for error in errors) / n, 6),
-        "rmse": round(math.sqrt(sum(error ** 2 for error in errors) / n), 6),
-        "mean_bias": round(sum(errors) / n, 6),
+        **{key: round(value, 6) for key, value in forecast_errors(
+            [r["predicted"] for r in rows], [r["actual"] for r in rows]).items()
+           if key != "sample_count"},
         "rows": rows,
         "warning": "Forecasts and actuals must use the same unit, horizon, and population. Small samples are not proof of predictive validity.",
     }

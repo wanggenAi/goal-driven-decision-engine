@@ -3,16 +3,36 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e .
       - run: python -m unittest discover -s tests -v
+      - run: python -m compileall -q src
       - run: gqde validate examples/candidates.json
-      - run: gqde score examples/candidates.json --output result.json
+      - run: gqde score examples/candidates.json --output legacy-result.json
       - run: gqde evaluate examples/outcomes.csv
+      - run: gqde validate examples/business.json
+      - run: gqde validate examples/content.json
+      - run: gqde score examples/business.json --sensitivity --format markdown --output business.md
+      - run: gqde sensitivity examples/content.json --output content-sensitivity.json
+      - run: gqde what-if examples/business.json examples/business_changes.json --output what-if.json
+      - run: gqde snapshot examples/business.json --predictions examples/business_predictions.json --output business.snapshot.json
+      - run: gqde history business.snapshot.json examples/business_outcomes.json --output business.history.json
+      - run: python examples/run_examples.py --output-dir artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-evidence-python-${{ matrix.python-version }}
+          path: artifacts/

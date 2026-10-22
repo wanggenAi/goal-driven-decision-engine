@@ -1,0 +1,656 @@
+{
+  "schema_version": "2.0",
+  "model_version": "business-illustrative-1",
+  "as_of": "2026-10-22T10:00:00+08:00",
+  "goal": {
+    "id": "business",
+    "description": "Prioritize business opportunities for a bounded pilot with positive realized net profit.",
+    "success_measure": "realized_net_profit_30d",
+    "evaluation_window": {
+      "start": "2026-10-23T00:00:00+08:00",
+      "end": "2026-11-22T00:00:00+08:00"
+    },
+    "direction": "maximize",
+    "object": "Candidate products",
+    "context": "Synthetic comparable candidates under an equal pilot budget; demonstration only.",
+    "outcome_unit": "CNY"
+  },
+  "questions": [
+    {
+      "id": "q_economics",
+      "goal_id": "business",
+      "question": "Can this candidate earn a positive contribution margin?",
+      "metrics": [
+        "unit_profit"
+      ]
+    },
+    {
+      "id": "q_demand",
+      "goal_id": "business",
+      "question": "Is demand growing?",
+      "metrics": [
+        "growth"
+      ]
+    },
+    {
+      "id": "q_risk",
+      "goal_id": "business",
+      "question": "Are refund and competition risks acceptable?",
+      "metrics": [
+        "refund_rate",
+        "competition"
+      ]
+    }
+  ],
+  "inputs": {
+    "price": {
+      "unit": "CNY/unit",
+      "description": "Synthetic price",
+      "min": 0
+    },
+    "cost": {
+      "unit": "CNY/unit",
+      "description": "Synthetic cost",
+      "min": 0
+    },
+    "fees": {
+      "unit": "CNY/unit",
+      "description": "Synthetic fees",
+      "min": 0
+    },
+    "recent": {
+      "unit": "unit",
+      "description": "Synthetic recent",
+      "min": 0
+    },
+    "previous": {
+      "unit": "unit",
+      "description": "Synthetic previous",
+      "min": 1
+    },
+    "refunds": {
+      "unit": "order",
+      "description": "Synthetic refunds",
+      "min": 0
+    },
+    "orders": {
+      "unit": "order",
+      "description": "Synthetic orders",
+      "min": 1
+    },
+    "competition_index": {
+      "unit": "1",
+      "description": "Synthetic competition_index",
+      "min": 0
+    }
+  },
+  "dimensions": [
+    {
+      "id": "economics",
+      "weight": 0.4,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "unit_profit",
+          "expression": "price - cost - fees",
+          "inputs": [
+            "price",
+            "cost",
+            "fees"
+          ],
+          "unit": "CNY/unit",
+          "direction": "higher",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 50,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Price minus purchase and service costs; contribution margin per unit",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "demand",
+      "weight": 0.25,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "growth",
+          "expression": "recent / previous - 1",
+          "inputs": [
+            "recent",
+            "previous"
+          ],
+          "unit": "1",
+          "direction": "higher",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 1,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Recent versus previous demand change",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "weight": 0.35,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "refund_rate",
+          "expression": "refunds / orders",
+          "inputs": [
+            "refunds",
+            "orders"
+          ],
+          "unit": "1",
+          "direction": "lower",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 0.2,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 4,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Fraction of orders refunded",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        },
+        {
+          "id": "competition",
+          "expression": "competition_index",
+          "inputs": [
+            "competition_index"
+          ],
+          "unit": "1",
+          "direction": "lower",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 1,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 3,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Declared competition index",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "positive_margin",
+      "metric": "unit_profit",
+      "op": ">",
+      "value": 0,
+      "explanation": "Positive contribution margin is mandatory."
+    },
+    {
+      "id": "acceptable_refunds",
+      "metric": "refund_rate",
+      "op": "<=",
+      "value": 0.1,
+      "explanation": "Refunds must not exceed 10%."
+    }
+  ],
+  "decision": {
+    "min_score": 65
+  },
+  "candidates": [
+    {
+      "id": "business-A",
+      "observations": {
+        "price": {
+          "value": 70,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 20,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "fees": {
+          "value": 5,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "recent": {
+          "value": 120,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "previous": {
+          "value": 100,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "refunds": {
+          "value": 3,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "orders": {
+          "value": 100,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "competition_index": {
+          "value": 0.7,
+          "unit": "1",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "business-B",
+      "observations": {
+        "price": {
+          "value": 50,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 20,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "fees": {
+          "value": 5,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "recent": {
+          "value": 180,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "previous": {
+          "value": 100,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "refunds": {
+          "value": 1,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "orders": {
+          "value": 100,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "competition_index": {
+          "value": 0.2,
+          "unit": "1",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "business-C",
+      "observations": {
+        "price": {
+          "value": 65,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 20,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "fees": {
+          "value": 5,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "recent": {
+          "value": 150,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "previous": {
+          "value": 100,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "refunds": {
+          "value": 4,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "orders": {
+          "value": 100,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "competition_index": {
+          "value": 0.4,
+          "unit": "1",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "business-D",
+      "observations": {
+        "price": {
+          "value": 20,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 25,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "fees": {
+          "value": 5,
+          "unit": "CNY/unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "recent": {
+          "value": 250,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "previous": {
+          "value": 100,
+          "unit": "unit",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "refunds": {
+          "value": 0,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "orders": {
+          "value": 100,
+          "unit": "order",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "competition_index": {
+          "value": 0,
+          "unit": "1",
+          "source": "synthetic:business:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    }
+  ],
+  "validation": {
+    "baseline_metric": "unit_profit",
+    "top_k": 1,
+    "min_samples": 10
+  }
+}
