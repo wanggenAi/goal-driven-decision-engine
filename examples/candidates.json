@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.0",
+  "as_of": "2026-10-22T10:00:00+08:00",
+  "goal": {
+    "id": "opportunity_screening",
+    "description": "Prioritize candidates for investigation, not purchasing decisions",
+    "success_measure": "realized_net_profit_30d"
+  },
+  "decision": {
+    "min_score": 70,
+    "max_age_hours": 72
+  },
+  "dimensions": [
+    {
+      "id": "economics",
+      "weight": 0.5,
+      "metrics": [
+        {
+          "id": "unit_profit",
+          "expression": "sale_price - purchase_cost - fees - service_cost",
+          "weight": 1,
+          "normalize": {
+            "low": 0,
+            "high": 50,
+            "direction": "higher"
+          }
+        }
+      ]
+    },
+    {
+      "id": "momentum",
+      "weight": 0.3,
+      "metrics": [
+        {
+          "id": "growth_rate",
+          "expression": "sales_recent / sales_previous - 1",
+          "weight": 1,
+          "normalize": {
+            "low": 0,
+            "high": 2,
+            "direction": "higher"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quality",
+      "weight": 0.2,
+      "metrics": [
+        {
+          "id": "refund_rate",
+          "expression": "refund_count / fulfilled_count",
+          "weight": 1,
+          "normalize": {
+            "low": 0,
+            "high": 0.2,
+            "direction": "lower"
+          }
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "metric": "unit_profit",
+      "op": ">",
+      "value": 0
+    },
+    {
+      "metric": "refund_rate",
+      "op": "<=",
+      "value": 0.1
+    }
+  ],
+  "candidates": [
+    {
+      "id": "fictional-A",
+      "observations": {
+        "sale_price": {
+          "value": 65,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "purchase_cost": {
+          "value": 28,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "fees": {
+          "value": 4,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "service_cost": {
+          "value": 8,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "sales_recent": {
+          "value": 75,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "sales_previous": {
+          "value": 60,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "refund_count": {
+          "value": 3,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "fulfilled_count": {
+          "value": 70,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        }
+      }
+    },
+    {
+      "id": "fictional-B",
+      "observations": {
+        "sale_price": {
+          "value": 58,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "purchase_cost": {
+          "value": 23,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "fees": {
+          "value": 5,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "service_cost": {
+          "value": 12,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "sales_recent": {
+          "value": 100,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "sales_previous": {
+          "value": 40,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "refund_count": {
+          "value": 12,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        },
+        "fulfilled_count": {
+          "value": 90,
+          "source": "synthetic:demo-only",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic"
+        }
+      }
+    }
+  ]
+}
