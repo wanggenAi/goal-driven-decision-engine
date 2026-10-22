@@ -1,0 +1,9 @@
+{
+  "candidate_id": "business-B",
+  "inputs": {
+    "fees": 35
+  },
+  "metric_weights": {
+    "unit_profit": 1
+  }
+}

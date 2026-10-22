@@ -1,0 +1,524 @@
+{
+  "schema_version": "2.0",
+  "model_version": "content-illustrative-1",
+  "as_of": "2026-10-22T10:00:00+08:00",
+  "goal": {
+    "id": "content",
+    "description": "Prioritize a content strategy for independently measured net follower growth under a fixed budget.",
+    "success_measure": "net_new_followers_30d",
+    "evaluation_window": {
+      "start": "2026-10-23T00:00:00+08:00",
+      "end": "2026-11-22T00:00:00+08:00"
+    },
+    "direction": "maximize",
+    "object": "Content strategies",
+    "context": "Synthetic comparable candidates under an equal pilot budget; demonstration only.",
+    "outcome_unit": "follower"
+  },
+  "questions": [
+    {
+      "id": "q_audience",
+      "goal_id": "content",
+      "question": "Does the strategy reach an audience?",
+      "metrics": [
+        "reach"
+      ]
+    },
+    {
+      "id": "q_conversion",
+      "goal_id": "content",
+      "question": "Does reach convert to engagement and followers?",
+      "metrics": [
+        "engagement_rate",
+        "follow_rate"
+      ]
+    },
+    {
+      "id": "q_resources",
+      "goal_id": "content",
+      "question": "Is the production effort sustainable?",
+      "metrics": [
+        "production_cost",
+        "cadence_fit"
+      ]
+    }
+  ],
+  "inputs": {
+    "impressions": {
+      "unit": "impression",
+      "description": "Synthetic impressions",
+      "min": 1
+    },
+    "engagements": {
+      "unit": "interaction",
+      "description": "Synthetic engagements",
+      "min": 0
+    },
+    "followers": {
+      "unit": "follower",
+      "description": "Synthetic followers",
+      "min": 0
+    },
+    "cost": {
+      "unit": "CNY/item",
+      "description": "Synthetic cost",
+      "min": 0
+    },
+    "hours": {
+      "unit": "hour/item",
+      "description": "Synthetic hours",
+      "min": 0
+    }
+  },
+  "dimensions": [
+    {
+      "id": "audience",
+      "weight": 0.2,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "reach",
+          "expression": "impressions",
+          "inputs": [
+            "impressions"
+          ],
+          "unit": "impression",
+          "direction": "higher",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 100000,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Comparable prior-period impressions",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "conversion",
+      "weight": 0.5,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "engagement_rate",
+          "expression": "engagements / impressions",
+          "inputs": [
+            "engagements",
+            "impressions"
+          ],
+          "unit": "1",
+          "direction": "higher",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 0.1,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Interactions per impression",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        },
+        {
+          "id": "follow_rate",
+          "expression": "followers / impressions",
+          "inputs": [
+            "followers",
+            "impressions"
+          ],
+          "unit": "1",
+          "direction": "higher",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 0.02,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "New followers per impression",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "weight": 0.3,
+      "weight_basis": "Explicit illustrative stakeholder priority; not an optimized weight.",
+      "metrics": [
+        {
+          "id": "production_cost",
+          "expression": "cost",
+          "inputs": [
+            "cost"
+          ],
+          "unit": "CNY/item",
+          "direction": "lower",
+          "normalize": {
+            "method": "min_max",
+            "low": 0,
+            "high": 1000,
+            "basis": "Illustrative expert anchors fixed before this synthetic evaluation; not calibrated."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Cost per planned content item",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        },
+        {
+          "id": "cadence_fit",
+          "expression": "hours",
+          "inputs": [
+            "hours"
+          ],
+          "unit": "hour/item",
+          "direction": "target",
+          "normalize": {
+            "method": "target",
+            "target": 6,
+            "tolerance": 6,
+            "basis": "Synthetic planning preference: six hours; utility falls to zero six hours away."
+          },
+          "weight": 1,
+          "weight_basis": "Equal local priority within this dimension; illustrative judgment.",
+          "explanation": "Distance from preferred production effort",
+          "evidence_requirements": {
+            "allowed_kinds": [
+              "observed",
+              "estimated",
+              "synthetic"
+            ],
+            "independently_verified": false,
+            "max_age_hours": 72,
+            "window_required": true
+          }
+        }
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "budget",
+      "metric": "production_cost",
+      "op": "<=",
+      "value": 1000,
+      "explanation": "Production budget is mandatory."
+    },
+    {
+      "id": "valid_follow_rate",
+      "metric": "follow_rate",
+      "op": "<=",
+      "value": 1,
+      "explanation": "Followers cannot exceed the exposure population."
+    }
+  ],
+  "decision": {
+    "min_score": 65
+  },
+  "candidates": [
+    {
+      "id": "content-A",
+      "observations": {
+        "impressions": {
+          "value": 80000,
+          "unit": "impression",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "engagements": {
+          "value": 4000,
+          "unit": "interaction",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "followers": {
+          "value": 800,
+          "unit": "follower",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 700,
+          "unit": "CNY/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "hours": {
+          "value": 8,
+          "unit": "hour/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "content-B",
+      "observations": {
+        "impressions": {
+          "value": 40000,
+          "unit": "impression",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "engagements": {
+          "value": 3200,
+          "unit": "interaction",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "followers": {
+          "value": 700,
+          "unit": "follower",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 300,
+          "unit": "CNY/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "hours": {
+          "value": 5,
+          "unit": "hour/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "content-C",
+      "observations": {
+        "impressions": {
+          "value": 60000,
+          "unit": "impression",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "engagements": {
+          "value": 2400,
+          "unit": "interaction",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "followers": {
+          "value": 600,
+          "unit": "follower",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 500,
+          "unit": "CNY/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "hours": {
+          "value": 6,
+          "unit": "hour/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    },
+    {
+      "id": "content-D",
+      "observations": {
+        "impressions": {
+          "value": 100000,
+          "unit": "impression",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "engagements": {
+          "value": 5000,
+          "unit": "interaction",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "followers": {
+          "value": 1000,
+          "unit": "follower",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "cost": {
+          "value": 1600,
+          "unit": "CNY/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        },
+        "hours": {
+          "value": 14,
+          "unit": "hour/item",
+          "source": "synthetic:content:fixture-v1",
+          "observed_at": "2026-10-22T09:00:00+08:00",
+          "kind": "synthetic",
+          "independently_verified": false,
+          "observation_window": {
+            "start": "2026-09-22T00:00:00+08:00",
+            "end": "2026-10-22T00:00:00+08:00"
+          }
+        }
+      }
+    }
+  ],
+  "validation": {
+    "baseline_metric": "reach",
+    "top_k": 1,
+    "min_samples": 10
+  }
+}

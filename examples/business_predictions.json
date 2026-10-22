@@ -1,0 +1,34 @@
+[
+  {
+    "candidate_id": "business-A",
+    "value": 900,
+    "unit": "CNY",
+    "method": "Synthetic manually specified numeric forecast; not inferred from composite score.",
+    "baseline_value": 700,
+    "baseline_basis": "Fixed synthetic prior-cohort reference, declared before outcomes."
+  },
+  {
+    "candidate_id": "business-B",
+    "value": 800,
+    "unit": "CNY",
+    "method": "Synthetic manually specified numeric forecast; not inferred from composite score.",
+    "baseline_value": 700,
+    "baseline_basis": "Fixed synthetic prior-cohort reference, declared before outcomes."
+  },
+  {
+    "candidate_id": "business-C",
+    "value": 1100,
+    "unit": "CNY",
+    "method": "Synthetic manually specified numeric forecast; not inferred from composite score.",
+    "baseline_value": 700,
+    "baseline_basis": "Fixed synthetic prior-cohort reference, declared before outcomes."
+  },
+  {
+    "candidate_id": "business-D",
+    "value": -100,
+    "unit": "CNY",
+    "method": "Synthetic manually specified numeric forecast; not inferred from composite score.",
+    "baseline_value": 700,
+    "baseline_basis": "Fixed synthetic prior-cohort reference, declared before outcomes."
+  }
+]

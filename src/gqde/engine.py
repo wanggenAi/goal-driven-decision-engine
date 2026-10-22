@@ -38,7 +38,10 @@ _KINDS = {"observed", "estimated", "synthetic"}
 def _number(value: Any, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ValidationError(f"{label} must be a number")
-    value = float(value)
+    try:
+        value = float(value)
+    except OverflowError as exc:
+        raise ValidationError(f"{label} must be finite") from exc
     if not math.isfinite(value):
         raise ValidationError(f"{label} must be finite")
     return value
@@ -113,7 +116,7 @@ def _weighted_score(items: list[tuple[float, float]]) -> float:
     total = sum(weight for _, weight in items)
     if not total or not math.isfinite(total):
         raise ValidationError("weights must have a positive finite sum")
-    return sum(value * weight for value, weight in items) / total
+    return _number(math.fsum(value * (weight / total) for value, weight in items), "weighted score")
 
 
 def _weight(value: Any, label: str) -> float:
@@ -131,7 +134,8 @@ def _normalize(value: float, spec: Any) -> float:
     direction = spec.get("direction")
     if high <= low or direction not in ("higher", "lower"):
         raise ValidationError("normalize requires high > low and higher/lower direction")
-    fraction = (value - low) / (high - low)
+    span = _number(high - low, "normalization span")
+    fraction = (min(high, max(low, value)) - low) / span
     if direction == "lower":
         fraction = 1 - fraction
     return round(max(0.0, min(100.0, fraction * 100.0)), 6)
@@ -139,6 +143,9 @@ def _normalize(value: float, spec: Any) -> float:
 
 def score_document(document: dict[str, Any]) -> dict[str, Any]:
     """Score all candidates, rejecting invalid documents rather than filling gaps."""
+    if isinstance(document, dict) and document.get("schema_version") == "2.0":
+        from .model import score_model
+        return score_model(document)
     if not isinstance(document, dict) or document.get("schema_version") != "1.0":
         raise ValidationError("schema_version must be 1.0")
     as_of = _timestamp(document.get("as_of"), "as_of")
@@ -240,12 +247,14 @@ def score_document(document: dict[str, Any]) -> dict[str, Any]:
             }
 
         metric_results: dict[str, Any] = {}
+        raw_values: dict[str, float] = {}
         dimension_results: dict[str, Any] = {}
         dimension_scores = []
         for dimension in compiled:
             metric_scores = []
             for metric, weight, expression, names in dimension["metrics"]:
                 raw = _calculate(expression, values)
+                raw_values[metric["id"]] = raw
                 normalized = _normalize(raw, metric["normalize"])
                 metric_results[metric["id"]] = {
                     "value": round(raw, 6), "score": normalized,
@@ -259,7 +268,7 @@ def score_document(document: dict[str, Any]) -> dict[str, Any]:
         score = round(_weighted_score(dimension_scores), 6)
         failed = []
         for gate in gates:
-            raw = metric_results[gate["metric"]]["value"]
+            raw = raw_values[gate["metric"]]
             value = _number(gate["value"], "gate.value")
             if not _COMPARISONS[gate["op"]](raw, value):
                 failed.append({"metric": gate["metric"], "op": gate["op"],
